@@ -1,4 +1,4 @@
-package com.example.music_zengmelian.model;
+package com.example.music_zengmeilian.home.model;
 
 /**
  * 音乐信息数据模型

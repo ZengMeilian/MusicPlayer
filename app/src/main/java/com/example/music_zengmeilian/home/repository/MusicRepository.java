@@ -1,54 +1,88 @@
-package com.example.music_zengmelian.repository;
+package com.example.music_zengmeilian.home.repository;
 
-import com.example.music_zengmelian.api.ApiService;
-import com.example.music_zengmelian.api.RetrofitClient;
-import com.example.music_zengmelian.model.HomePageResponse;
+import android.content.Context;
+import android.util.Log;
 
+import com.example.music_zengmeilian.home.api.ApiService;
+import com.example.music_zengmeilian.home.api.RetrofitClient;
+import com.example.music_zengmeilian.home.model.HomePageResponse;
+import com.google.gson.Gson;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.Scanner;
 
-/**
- * 数据仓库类
- * 统一管理数据获取逻辑
- */
 public class MusicRepository {
-    private ApiService apiService;
+    private static final String TAG = "MusicRepository";
+    private static final String CACHE_FILE = "home_data_cache.json";
+    private final ApiService apiService;
+    private final Context context;
+    private final Gson gson = new Gson();
 
-    public MusicRepository() {
-        apiService = RetrofitClient.getClient().create(ApiService.class);
+    public MusicRepository(Context context) {
+        this.context = context.getApplicationContext();
+        this.apiService = RetrofitClient.getClient(context).create(ApiService.class);
     }
 
-    /**
-     * 获取首页数据
-     * @param page 页码
-     * @param size 每页大小
-     * @param callback 回调接口
-     */
-    public void getHomePageData(int page, int size,
-                                final DataCallback<HomePageResponse> callback) {
+    public void getHomePageData(int page, int size, DataCallback<HomePageResponse> callback) {
+        // 先尝试网络请求
         apiService.getHomePageData(page, size).enqueue(new Callback<HomePageResponse>() {
             @Override
-            public void onResponse(Call<HomePageResponse> call,
-                                   Response<HomePageResponse> response) {
+            public void onResponse(Call<HomePageResponse> call, Response<HomePageResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    saveToCache(response.body());
                     callback.onSuccess(response.body());
                 } else {
-                    callback.onError("Response error");
+                    Log.w(TAG, "网络响应异常: " + response.code());
+                    loadFromCache(callback);
                 }
             }
 
             @Override
             public void onFailure(Call<HomePageResponse> call, Throwable t) {
-                callback.onError(t.getMessage());
+                Log.e(TAG, "网络请求失败", t);
+                loadFromCache(callback);
             }
         });
     }
 
-    /**
-     * 数据回调接口
-     * @param <T> 数据类型
-     */
+    private void saveToCache(HomePageResponse data) {
+        try (FileOutputStream fos = context.openFileOutput(CACHE_FILE, Context.MODE_PRIVATE)) {
+            fos.write(gson.toJson(data).getBytes());
+            Log.d(TAG, "数据缓存成功");
+        } catch (Exception e) {
+            Log.e(TAG, "缓存保存失败", e);
+        }
+    }
+
+    private void loadFromCache(DataCallback<HomePageResponse> callback) {
+        File cacheFile = new File(context.getFilesDir(), CACHE_FILE);
+        if (!cacheFile.exists()) {
+            callback.onError("网络不可用且无缓存数据");
+            return;
+        }
+
+        try (FileInputStream fis = context.openFileInput(CACHE_FILE);
+             Scanner scanner = new Scanner(fis).useDelimiter("\\A")) {
+
+            String json = scanner.hasNext() ? scanner.next() : "";
+            HomePageResponse cachedData = gson.fromJson(json, HomePageResponse.class);
+
+            if (cachedData != null && cachedData.getData() != null) {
+                Log.d(TAG, "使用缓存数据");
+                callback.onSuccess(cachedData);
+            } else {
+                callback.onError("缓存数据无效");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "缓存读取失败", e);
+            callback.onError("缓存解析失败");
+        }
+    }
+
     public interface DataCallback<T> {
         void onSuccess(T data);
         void onError(String message);

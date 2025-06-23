@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 网络安全配置文件 - 允许HTTP图片加载 -->
+<network-security-config>
+    <!-- 允许网易云音乐CDN的HTTP流量 -->
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- 网易云音乐图片CDN域名 -->
+        <domain includeSubdomains="true">music.126.net</domain>
+        <domain includeSubdomains="true">p1.music.126.net</domain>
+        <domain includeSubdomains="true">p2.music.126.net</domain>
+        <domain includeSubdomains="true">p3.music.126.net</domain>
+        <domain includeSubdomains="true">p4.music.126.net</domain>
+    </domain-config>
+
+    <!-- 如果还有其他HTTP域名需要访问，可以添加在这里 -->
+    <!--
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">your-other-domain.com</domain>
+    </domain-config>
+    -->
+</network-security-config>

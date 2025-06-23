@@ -5,7 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:background="?attr/selectableItemBackground"> <!-- 添加点击效果 -->
+
+    <TextView
+        android:id="@+id/singleModuleNameText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textStyle="bold"/>
 
     <!-- 封面图片 -->
     <ImageView
@@ -16,38 +24,46 @@
         android:contentDescription="@string/cover_image_desc"/>
 
     <!-- 音乐信息区域 -->
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:padding="8dp">
 
-        <!-- 音乐名称 -->
-        <TextView
-            android:id="@+id/musicNameText"
+        <!-- 音乐名称和歌手信息 -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:textStyle="bold"/>
+            android:orientation="vertical"
+            android:layout_toLeftOf="@+id/addButton">
 
-        <!-- 歌手信息 -->
-        <TextView
-            android:id="@+id/artistText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@color/gray_600"
-            android:layout_marginTop="4dp"/>
+            <!-- 音乐名称 -->
+            <TextView
+                android:id="@+id/musicNameText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:textStyle="bold"/>
+
+            <!-- 歌手信息 -->
+            <TextView
+                android:id="@+id/artistText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/gray_600"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
 
         <!-- 操作按钮 -->
         <ImageButton
             android:id="@+id/addButton"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_gravity="end"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
             android:src="@drawable/ic_add"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:layout_marginTop="8dp"/>
-    </LinearLayout>
+            android:contentDescription="@string/add_to_list"/>
+    </RelativeLayout>
 </LinearLayout>

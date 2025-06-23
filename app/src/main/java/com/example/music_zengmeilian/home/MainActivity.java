@@ -1,6 +1,7 @@
 package com.example.music_zengmeilian.home;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -12,8 +13,11 @@ import com.example.music_zengmeilian.home.adapter.HomeAdapter;
 import com.example.music_zengmeilian.home.viewmodel.HomeViewModel;
 
 public class MainActivity extends AppCompatActivity {
-    private RecyclerView recyclerView;
+    private static final String TAG = "MainActivity";
+
     private SwipeRefreshLayout swipeRefreshLayout;
+    private RecyclerView recyclerView;
+    private View emptyView;
     private HomeAdapter adapter;
     private HomeViewModel viewModel;
 
@@ -24,52 +28,41 @@ public class MainActivity extends AppCompatActivity {
 
         initViews();
         setupViewModel();
-        setupObservers();
         loadData(true);
     }
 
     private void initViews() {
-        recyclerView = findViewById(R.id.recyclerView);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        recyclerView = findViewById(R.id.recyclerView);
+        emptyView = findViewById(R.id.emptyView); // 确保布局中有这个id
 
         adapter = new HomeAdapter(this);
-        recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(true);
 
         swipeRefreshLayout.setOnRefreshListener(() -> loadData(true));
-        swipeRefreshLayout.setColorSchemeResources(
-                android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light
-        );
+        findViewById(R.id.retryButton).setOnClickListener(v -> loadData(true)); // 确保布局中有这个id
     }
 
     private void setupViewModel() {
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
-    }
 
-    private void setupObservers() {
         viewModel.getHomeData().observe(this, data -> {
             swipeRefreshLayout.setRefreshing(false);
-            try {
-                if (data != null && !data.isEmpty()) {
-                    adapter.setData(data);
-                } else {
-                    Toast.makeText(this, "没有数据", Toast.LENGTH_SHORT).show();
-                }
-            } catch (Exception e) {
-                Toast.makeText(this, "UI渲染错误: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
+            if (data == null || data.isEmpty()) {
+                showEmptyView(true);
+                Toast.makeText(this, R.string.no_data_available, Toast.LENGTH_SHORT).show();
+            } else {
+                showEmptyView(false);
+                adapter.setData(data);
             }
         });
 
         viewModel.getErrorMessage().observe(this, error -> {
             swipeRefreshLayout.setRefreshing(false);
-            if (error != null && !error.isEmpty()) {
-                Toast.makeText(this, "错误: " + error, Toast.LENGTH_SHORT).show();
-            }
+            showEmptyView(true);
+            Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -78,11 +71,16 @@ public class MainActivity extends AppCompatActivity {
         viewModel.loadHomeData(isRefresh);
     }
 
+    private void showEmptyView(boolean show) {
+        emptyView.setVisibility(show ? View.VISIBLE : View.GONE);
+        recyclerView.setVisibility(show ? View.GONE : View.VISIBLE);
+    }
+
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         if (adapter != null) {
-            adapter = null;
+            adapter.cleanup();
         }
+        super.onDestroy();
     }
 }

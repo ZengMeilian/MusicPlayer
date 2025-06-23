@@ -1,34 +1,27 @@
 package com.example.music_zengmeilian.home.viewmodel;
 
+import android.app.Application;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
-import com.example.music_zengmelian.model.HomePageResponse;
-import com.example.music_zengmelian.model.MusicInfo;
-import com.example.music_zengmelian.repository.MusicRepository;
-
+import com.example.music_zengmeilian.home.model.HomePageResponse;
+import com.example.music_zengmeilian.home.repository.MusicRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 首页ViewModel
- * 负责管理首页数据的获取和状态
- */
-public class HomeViewModel extends ViewModel {
-    private MutableLiveData<List<HomePageResponse.HomePageInfo>> homeData = new MutableLiveData<>();
-    private MutableLiveData<String> errorMessage = new MutableLiveData<>();
-    private MusicRepository repository;
+public class HomeViewModel extends AndroidViewModel {
+    private final MutableLiveData<List<HomePageResponse.HomePageInfo>> homeData = new MutableLiveData<>();
+    private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final MusicRepository repository;
     private int currentPage = 1;
     private final int pageSize = 5;
 
-    public HomeViewModel() {
-        repository = new MusicRepository();
+    public HomeViewModel(@NonNull Application application) {
+        super(application);
+        this.repository = new MusicRepository(application);
     }
 
-    /**
-     * 加载首页数据
-     * @param isRefresh 是否为刷新操作
-     */
     public void loadHomeData(boolean isRefresh) {
         if (isRefresh) {
             currentPage = 1;
@@ -37,25 +30,45 @@ public class HomeViewModel extends ViewModel {
         repository.getHomePageData(currentPage, pageSize,
                 new MusicRepository.DataCallback<HomePageResponse>() {
                     @Override
-                    public void onSuccess(HomePageResponse data) {
-                        if (isRefresh) {
-                            homeData.setValue(data.getData().getRecords());
-                        } else {
-                            List<HomePageResponse.HomePageInfo> current = homeData.getValue();
-                            if (current == null) {
-                                current = new ArrayList<>();
+                    public void onSuccess(HomePageResponse response) {
+                        if (response == null || response.getData() == null) {
+                            errorMessage.postValue("服务器返回空数据");
+                            return;
+                        }
+
+                        List<HomePageResponse.HomePageInfo> validData = new ArrayList<>();
+                        for (HomePageResponse.HomePageInfo item : response.getData().getRecords()) {
+                            if (item != null && item.getMusicInfoList() != null) {
+                                item.setModuleName(getLocalModuleName(item.getStyle()));
+                                validData.add(item);
                             }
-                            current.addAll(data.getData().getRecords());
-                            homeData.setValue(current);
-                            currentPage++;
+                        }
+
+                        if (validData.isEmpty()) {
+                            errorMessage.postValue("没有有效数据");
+                        } else {
+                            homeData.postValue(validData);
+                            if (!isRefresh) {
+                                currentPage++;
+                            }
                         }
                     }
 
                     @Override
                     public void onError(String message) {
-                        errorMessage.setValue(message);
+                        errorMessage.postValue(message);
                     }
                 });
+    }
+
+    private String getLocalModuleName(int style) {
+        switch (style) {
+            case 1: return "推荐";
+            case 2: return "热门单曲";
+            case 3: return "每日推荐";
+            case 4: return "热门歌单";
+            default: return "";
+        }
     }
 
     public MutableLiveData<List<HomePageResponse.HomePageInfo>> getHomeData() {
