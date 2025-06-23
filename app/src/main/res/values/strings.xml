@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">music_zengmeilian</string>
+    <string name="cover_image_desc">音乐封面图片</string>
+    <string name="privacy_agreement_text">欢迎使用音乐社区，我们将严格遵守相关法律和隐私政策保护您的个人隐私，请您阅读并同意《用户协议》与《隐私政策》。</string>
+</resources>
