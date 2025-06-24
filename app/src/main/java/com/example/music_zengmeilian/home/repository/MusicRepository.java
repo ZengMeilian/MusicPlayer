@@ -3,9 +3,9 @@ package com.example.music_zengmeilian.home.repository;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.music_zengmeilian.home.api.ApiService;
-import com.example.music_zengmeilian.home.api.RetrofitClient;
-import com.example.music_zengmeilian.home.model.HomePageResponse;
+import com.example.music_zengmeilian.api.ApiService;
+import com.example.music_zengmeilian.api.RetrofitClient;
+import com.example.music_zengmeilian.model.HomePageResponse;
 import com.google.gson.Gson;
 import retrofit2.Call;
 import retrofit2.Callback;

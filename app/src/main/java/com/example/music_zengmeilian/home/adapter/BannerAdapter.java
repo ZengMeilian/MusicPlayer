@@ -18,7 +18,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.music_zengmeilian.R;
-import com.example.music_zengmeilian.home.model.MusicInfo;
+import com.example.music_zengmeilian.model.MusicInfo;
 
 import java.net.URL;
 import java.util.List;
@@ -63,7 +63,7 @@ public class BannerAdapter extends RecyclerView.Adapter<BannerAdapter.BannerView
         // 点击事件
         holder.itemView.setOnClickListener(v -> {
             Log.d(TAG, "[Banner] 点击: " + music.getMusicName());
-            Toast.makeText(context, music.getMusicName() + " - " + music.getAuthor(),
+            Toast.makeText(context, music.getMusicName() + " - " + music.getSinger(),
                     Toast.LENGTH_SHORT).show();
         });
     }

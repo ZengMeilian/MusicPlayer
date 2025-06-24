@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/pink"
+    android:padding="20dp">
+    
+
+    <!-- 专辑封面 -->
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/iv_cover"
+        android:layout_width="280dp"
+        android:layout_height="280dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="120dp"
+        android:scaleType="centerCrop"/>
+
+    <!-- 歌名 -->
+    <TextView
+        android:id="@+id/tv_song_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/iv_cover"
+        android:layout_centerHorizontal="true"
+        android:layout_alignLeft="@id/player_control_cover"
+        android:layout_marginTop="30dp"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <!-- 歌手 -->
+    <TextView
+        android:id="@+id/tv_singer_player"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_song_title"
+        android:layout_centerHorizontal="true"
+        android:layout_alignLeft="@id/player_control_cover"
+        android:layout_marginTop="8dp"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        android:alpha="0.8" />
+
+    <include
+        android:id="@+id/player_control_cover"
+        layout="@layout/player_control"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_singer_player"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"/>
+</RelativeLayout>

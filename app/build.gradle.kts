@@ -33,6 +33,8 @@ android {
 }
 
 dependencies {
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
+
     implementation ("com.github.JessYanCoding:AndroidAutoSize:v1.2.1")
 
     implementation("androidx.appcompat:appcompat:1.6.1")

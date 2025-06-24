@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/info_play"
+    android:padding="8dp">
+
+    <!-- 播放按钮 -->
+    <ImageButton
+        android:id="@+id/button_play"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:src="@mipmap/button_play_home"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/add_to_list"/>
+
+    <!-- 音乐名称和歌手信息 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_toStartOf="@id/button_play"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true">
+
+        <!-- 音乐名称 -->
+        <TextView
+            android:id="@+id/text_music_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:ellipsize="end"
+            android:maxLines="1"/>
+
+        <!-- 歌手信息 -->
+        <TextView
+            android:id="@+id/text_singer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:maxLines="1"/>
+    </LinearLayout>
+
+</RelativeLayout>

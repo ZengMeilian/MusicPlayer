@@ -1,14 +1,18 @@
 package com.example.music_zengmeilian.home.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,10 +23,12 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.music_zengmeilian.R;
-import com.example.music_zengmeilian.home.model.HomePageResponse.HomePageInfo;
-import com.example.music_zengmeilian.home.model.MusicInfo;
+import com.example.music_zengmeilian.model.HomePageResponse.HomePageInfo;
+import com.example.music_zengmeilian.model.MusicInfo;
+import com.example.music_zengmeilian.player.PlayerActivity;
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -183,29 +189,6 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         Log.e(TAG, "[" + tag + "] 图片加载失败!");
                         Log.e(TAG, "失败URL: " + url);
 
-                        if (e != null) {
-                            Log.e(TAG, "主要错误: " + e.getMessage());
-
-                            // 详细错误分析
-                            List<Throwable> causes = e.getRootCauses();
-                            for (int i = 0; i < causes.size(); i++) {
-                                Throwable cause = causes.get(i);
-                                String errorMsg = cause.getMessage();
-                                Log.e(TAG, "根本原因[" + i + "]: " +
-                                        cause.getClass().getSimpleName() + " - " + errorMsg);
-
-                                // 特别检查常见错误
-                                if (errorMsg != null) {
-                                    if (errorMsg.contains("CLEARTEXT")) {
-                                        Log.e(TAG, "CLEARTEXT错误! HTTP流量被阻止，检查网络安全配置!");
-                                    } else if (errorMsg.contains("UnknownHost")) {
-                                        Log.e(TAG, "DNS解析失败! 检查网络连接!");
-                                    } else if (errorMsg.contains("timeout")) {
-                                        Log.e(TAG, "连接超时! 网络速度慢或服务器响应慢!");
-                                    }
-                                }
-                            }
-                        }
                         return false;
                     }
 
@@ -263,13 +246,19 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     class HorizontalViewHolder extends RecyclerView.ViewHolder {
         TextView horizontalModuleNameText;
         ImageView imageView;
-        TextView horizontalTitleText;
+        View horizontalInfo;
+        TextView musicName;
+        TextView singer;
+        ImageButton buttonPlay;
 
         HorizontalViewHolder(View itemView) {
             super(itemView);
             horizontalModuleNameText = itemView.findViewById(R.id.horizontalModuleNameText);
             imageView = itemView.findViewById(R.id.imageView);
-            horizontalTitleText = itemView.findViewById(R.id.horizontalTitleText);
+            horizontalInfo = itemView.findViewById(R.id.horizontalInfo);
+            musicName = horizontalInfo.findViewById(R.id.text_music_name);
+            singer = horizontalInfo.findViewById(R.id.text_singer);
+            buttonPlay = horizontalInfo.findViewById(R.id.button_play);
         }
 
         void bind(List<MusicInfo> musicList, String moduleName) {
@@ -281,10 +270,43 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             // 显示第一首音乐的信息
             if (musicList != null && !musicList.isEmpty()) {
                 MusicInfo firstMusic = musicList.get(0);
-                horizontalTitleText.setText(firstMusic.getMusicName() + " - " + firstMusic.getAuthor());
+                musicName.setText(firstMusic.getMusicName());
+                singer.setText(firstMusic.getSinger());
 
                 // 加载封面图片
                 loadImageWithDebug(firstMusic.getCoverUrl(), imageView, "横滑大卡");
+
+                //点击按钮，添加到播放列表
+                buttonPlay.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        Toast.makeText(context, "已添加到播放列表", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
+                //点击图片，弹出音乐名称
+                imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(context, musicName.getText(), Toast.LENGTH_SHORT).show();
+
+                        // 启动音乐播放界面
+                        Intent intent = new Intent(context, PlayerActivity.class);
+
+                        // 传递当前音乐信息
+                        intent.putExtra("current_music", firstMusic);
+
+                        // 传递整个播放列表
+                        intent.putExtra("music_list", (Serializable) musicList);
+
+                        // 传递当前播放索引
+                        intent.putExtra("current_index", 0);
+
+                        context.startActivity(intent);
+                    }
+                });
             }
         }
     }
@@ -296,15 +318,19 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     class SingleColumnViewHolder extends RecyclerView.ViewHolder {
         TextView singleModuleNameText;
         ImageView coverImage;
-        TextView musicNameText;
-        TextView artistText;
+        View singleInfo;
+        TextView musicName;
+        TextView singer;
+        ImageButton buttonPlay;
 
         SingleColumnViewHolder(View itemView) {
             super(itemView);
             singleModuleNameText = itemView.findViewById(R.id.singleModuleNameText);
             coverImage = itemView.findViewById(R.id.coverImage);
-            musicNameText = itemView.findViewById(R.id.musicNameText);
-            artistText = itemView.findViewById(R.id.artistText);
+            singleInfo = itemView.findViewById(R.id.singleInfo);
+            musicName = singleInfo.findViewById(R.id.text_music_name);
+            singer = singleInfo.findViewById(R.id.text_singer);
+            buttonPlay = singleInfo.findViewById(R.id.button_play);
         }
 
         void bind(List<MusicInfo> musicList, String moduleName) {
@@ -316,11 +342,30 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             // 显示第一首音乐的信息
             if (musicList != null && !musicList.isEmpty()) {
                 MusicInfo firstMusic = musicList.get(0);
-                musicNameText.setText(firstMusic.getMusicName());
-                artistText.setText(firstMusic.getAuthor());
+                musicName.setText(firstMusic.getMusicName());
+                singer.setText(firstMusic.getSinger());
 
                 // 加载封面图片
                 loadImageWithDebug(firstMusic.getCoverUrl(), coverImage, "单列");
+
+                //点击按钮，添加到播放列表
+                buttonPlay.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        Toast.makeText(context, "已添加到播放列表", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
+                //点击图片，弹出音乐名称
+                coverImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(context, musicName.getText(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
             }
         }
     }
@@ -333,20 +378,28 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         TextView twoColumnModuleNameText;
         ImageView coverImage1;
         ImageView coverImage2;
-        TextView twoColumnMusicName1;
-        TextView twoColumnMusicName2;
-        TextView twoColumnArtist1;
-        TextView twoColumnArtist2;
+        View Info1;
+        View Info2;
+        TextView musicName1;
+        TextView musicName2;
+        TextView singer1;
+        TextView singer2;
+        ImageButton buttonPlay1;
+        ImageButton buttonPlay2;
 
         TwoColumnViewHolder(View itemView) {
             super(itemView);
             twoColumnModuleNameText = itemView.findViewById(R.id.twoColumnModuleNameText);
             coverImage1 = itemView.findViewById(R.id.coverImage1);
             coverImage2 = itemView.findViewById(R.id.coverImage2);
-            twoColumnMusicName1 = itemView.findViewById(R.id.twoColumnMusicName1);
-            twoColumnMusicName2 = itemView.findViewById(R.id.twoColumnMusicName2);
-            twoColumnArtist1 = itemView.findViewById(R.id.twoColumnArtist1);
-            twoColumnArtist2 = itemView.findViewById(R.id.twoColumnArtist2);
+            Info1 = itemView.findViewById(R.id.twoColumnInfo1);
+            Info2 = itemView.findViewById(R.id.twoColumnInfo2);
+            musicName1 = Info1.findViewById(R.id.text_music_name);
+            singer1 = Info1.findViewById(R.id.text_singer);
+            musicName2 = Info2.findViewById(R.id.text_music_name);
+            singer2 = Info2.findViewById(R.id.text_singer);
+            buttonPlay1 = Info1.findViewById(R.id.button_play);
+            buttonPlay2 = Info2.findViewById(R.id.button_play);
         }
 
         void bind(List<MusicInfo> musicList, String moduleName) {
@@ -358,28 +411,64 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             // 左侧音乐信息 (第一首)
             if (musicList.size() > 0) {
                 MusicInfo leftMusic = musicList.get(0);
-                twoColumnMusicName1.setText(leftMusic.getMusicName());
-                twoColumnArtist1.setText(leftMusic.getAuthor());
+                musicName1.setText(leftMusic.getMusicName());
+                singer1.setText(leftMusic.getSinger());
                 loadImageWithDebug(leftMusic.getCoverUrl(), coverImage1, "双列-左");
             } else {
                 // 如果没有数据，设置默认值
-                twoColumnMusicName1.setText("");
-                twoColumnArtist1.setText("");
+                musicName1.setText("");
+                singer1.setText("");
                 coverImage1.setImageResource(android.R.drawable.ic_menu_gallery);
             }
 
             // 右侧音乐信息 (第二首)
             if (musicList.size() > 1) {
                 MusicInfo rightMusic = musicList.get(1);
-                twoColumnMusicName2.setText(rightMusic.getMusicName());
-                twoColumnArtist2.setText(rightMusic.getAuthor());
+                musicName2.setText(rightMusic.getMusicName());
+                singer2.setText(rightMusic.getSinger());
                 loadImageWithDebug(rightMusic.getCoverUrl(), coverImage2, "双列-右");
             } else {
                 // 如果没有第二首音乐，设置默认值
-                twoColumnMusicName2.setText("");
-                twoColumnArtist2.setText("");
+                musicName2.setText("");
+                singer2.setText("");
                 coverImage2.setImageResource(android.R.drawable.ic_menu_gallery);
             }
+
+            //点击按钮，添加到播放列表
+            buttonPlay1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    Toast.makeText(context, "已添加到播放列表", Toast.LENGTH_SHORT).show();
+
+                }
+            });
+            //点击按钮，添加到播放列表
+            buttonPlay2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    Toast.makeText(context, "已添加到播放列表", Toast.LENGTH_SHORT).show();
+
+                }
+            });
+
+            //点击图片，弹出音乐名称
+            coverImage1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(context, musicName1.getText(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            //点击图片，弹出音乐名称
+            coverImage2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(context, musicName2.getText(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
         }
     }
 }

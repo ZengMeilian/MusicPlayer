@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
 
         swipeRefreshLayout.setOnRefreshListener(() -> loadData(true));
-        findViewById(R.id.retryButton).setOnClickListener(v -> loadData(true)); // 确保布局中有这个id
+        findViewById(R.id.retryButton).setOnClickListener(v -> loadData(true));
     }
 
     private void setupViewModel() {

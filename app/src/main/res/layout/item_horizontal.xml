@@ -13,23 +13,24 @@
         android:textSize="16sp"
         android:textStyle="bold"/>
 
-    <!-- 横向内容区域 -->
-    <LinearLayout
+    <!-- 带叠加文本的图片区域 -->
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
             android:scaleType="centerCrop"/>
 
-        <TextView
-            android:id="@+id/horizontalTitleText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:textSize="16sp"/>
-    </LinearLayout>
+    <!-- 歌名、歌手以及播放按钮 -->
+    <include
+        android:id="@+id/horizontalInfo"
+        layout="@layout/home_info_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"/>
+    </FrameLayout>
+
 </LinearLayout>

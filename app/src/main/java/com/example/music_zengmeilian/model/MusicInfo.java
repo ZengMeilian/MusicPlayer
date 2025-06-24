@@ -1,0 +1,35 @@
+package com.example.music_zengmeilian.model;
+
+import java.io.Serializable;
+
+/**
+ * 音乐信息数据模型
+ * 对应API返回的单条音乐数据
+ */
+public class MusicInfo implements Serializable {
+    private long id;            // 音乐ID
+    private String musicName;   // 音乐名称
+    private String singer;      // 作者/歌手
+    private String coverUrl;    // 封面图URL
+    private String musicUrl;    // 音乐文件URL
+    private String lyricUrl;    // 歌词文件URL
+
+    // 构造方法
+    public MusicInfo(long id, String musicName, String singer,
+                     String coverUrl, String musicUrl, String lyricUrl) {
+        this.id = id;
+        this.musicName = musicName;
+        this.singer = singer;
+        this.coverUrl = coverUrl;
+        this.musicUrl = musicUrl;
+        this.lyricUrl = lyricUrl;
+    }
+
+    // Getter方法
+    public long getId() { return id; }
+    public String getMusicName() { return musicName; }
+    public String getSinger() { return singer; }
+    public String getCoverUrl() { return coverUrl; }
+    public String getMusicUrl() { return musicUrl; }
+    public String getLyricUrl() { return lyricUrl; }
+}

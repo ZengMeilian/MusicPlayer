@@ -2,8 +2,6 @@ package com.example.music_zengmeilian;
 
 import android.app.Application;
 
-import com.example.music_zengmeilian.home.api.RetrofitClient;
-
 import me.jessyan.autosize.AutoSize;
 import me.jessyan.autosize.AutoSizeConfig;
 import me.jessyan.autosize.unit.Subunits;
