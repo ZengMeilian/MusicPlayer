@@ -54,13 +54,8 @@ public class PlayerActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null) {
             currentMusic = (MusicInfo) intent.getSerializableExtra("currentMusic");
-            // 修改key名称，保持一致
-            musicList = (List<MusicInfo>) intent.getSerializableExtra("music_list");  // 改为 "music_list"
+            musicList = (List<MusicInfo>) intent.getSerializableExtra("music_list");
             currentIndex = intent.getIntExtra("current_index", 0);
-
-            Log.d(TAG, "接收到的音乐: " + (currentMusic != null ? currentMusic.getMusicName() : "null"));
-            Log.d(TAG, "音乐列表大小: " + (musicList != null ? musicList.size() : "0"));
-            Log.d(TAG, "当前索引: " + currentIndex);
 
             if (currentMusic != null) {
                 Log.d(TAG, "音频URL: " + currentMusic.getMusicUrl());

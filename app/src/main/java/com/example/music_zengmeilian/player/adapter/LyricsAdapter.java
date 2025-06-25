@@ -5,14 +5,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.music_zengmeilian.R;
 import com.example.music_zengmeilian.model.LyricsInfo;
 import java.util.List;
 
 public class LyricsAdapter extends RecyclerView.Adapter<LyricsAdapter.LyricViewHolder> {
 
     private List<LyricsInfo> lyricsList;
+    private int currentLyricIndex = -1;
 
     public LyricsAdapter(List<LyricsInfo> lyricsList) {
         this.lyricsList = lyricsList;
@@ -26,11 +29,6 @@ public class LyricsAdapter extends RecyclerView.Adapter<LyricsAdapter.LyricViewH
         return new LyricViewHolder(view);
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull LyricViewHolder holder, int position) {
-        LyricsInfo lyricsInfo = lyricsList.get(position);
-        holder.textView.setText(lyricsInfo.getContent());
-    }
 
     @Override
     public int getItemCount() {
@@ -45,4 +43,24 @@ public class LyricsAdapter extends RecyclerView.Adapter<LyricsAdapter.LyricViewH
             textView = itemView.findViewById(android.R.id.text1);
         }
     }
+
+    public void setCurrentLyricIndex(int index) {
+        this.currentLyricIndex = index;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull LyricViewHolder holder, int position) {
+        LyricsInfo lyricsInfo = lyricsList.get(position);
+        holder.textView.setText(lyricsInfo.getContent());
+
+        // 高亮当前播放的歌词
+        if (position == currentLyricIndex) {
+            holder.textView.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.colorAccent));
+            holder.textView.setTextSize(18);
+        } else {
+            holder.textView.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), android.R.color.darker_gray));
+            holder.textView.setTextSize(16);
+        }
+    }
+
 }
