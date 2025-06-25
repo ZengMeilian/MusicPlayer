@@ -26,6 +26,7 @@ import com.example.music_zengmeilian.R;
 import com.example.music_zengmeilian.model.HomePageResponse.HomePageInfo;
 import com.example.music_zengmeilian.model.MusicInfo;
 import com.example.music_zengmeilian.player.PlayerActivity;
+import com.example.music_zengmeilian.utils.FloatingViewManager;
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 
 import java.io.Serializable;
@@ -45,12 +46,15 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_SINGLE_COLUMN = 3;    // 单列布局
     private static final int TYPE_TWO_COLUMN = 4;       // 双列布局
 
+    private FloatingViewManager floatingViewManager;
     private Context context;
     private List<HomePageInfo> homePageInfoList;
 
-    public HomeAdapter(Context context) {
+    public HomeAdapter(Context context, List<HomePageInfo> homePageInfoList,
+                       FloatingViewManager floatingViewManager) {
         this.context = context;
         this.homePageInfoList = new ArrayList<>();
+        this.floatingViewManager = floatingViewManager;
     }
 
     public HomeAdapter(Context context, List<HomePageInfo> homePageInfoList) {
@@ -62,9 +66,29 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (data != null) {
             this.homePageInfoList.clear();
             this.homePageInfoList.addAll(data);
+
+            // 随机选择一个模块并播放
+            playRandomMusicFromModule(data);
+
             notifyDataSetChanged();
         }
     }
+
+    private void playRandomMusicFromModule(List<HomePageInfo> data) {
+        int randomModuleIndex = (int) (Math.random() * data.size());
+        HomePageInfo randomModule = data.get(randomModuleIndex);
+        List<MusicInfo> musicList = randomModule.getMusicInfoList();
+
+        if (musicList != null && !musicList.isEmpty()) {
+            // 随机选择一首音乐
+            int randomMusicIndex = (int) (Math.random() * musicList.size());
+            MusicInfo selectedMusic = musicList.get(randomMusicIndex);
+
+            // 更新悬浮窗中当前音乐的信息
+            floatingViewManager.updateCurrentMusic(selectedMusic);
+        }
+    }
+
 
     //获取某个位置的模块样式
     @Override
@@ -187,6 +211,10 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             public void onClick(View view) {
                 Toast.makeText(context, "添加到播放列表", Toast.LENGTH_SHORT).show();
 
+                /// 更新悬浮窗中的当前音乐信息
+                if (floatingViewManager != null) {
+                    floatingViewManager.updateCurrentMusic(musicInfo);
+                }
             }
         });
     }

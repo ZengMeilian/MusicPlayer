@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="392dp"
+    android:layout_height="70dp"
+    android:orientation="horizontal"
+    android:background="@color/white"
+    android:layout_gravity="bottom"
+    android:gravity="center">
+
+    <!-- 歌曲封面 -->
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/song_image"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:src="@mipmap/frame4"
+        android:layout_marginEnd="10dp"/>
+
+    <!-- 歌名和歌手名 -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:layout_gravity="center">
+
+        <TextView
+            android:id="@+id/song_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Song Name"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" - "
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/artist_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Artist Name"
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray" />
+    </LinearLayout>
+
+    <!-- 播放控制 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <ImageButton
+            android:id="@+id/play_pause_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:paddingEnd="20dp"
+            android:contentDescription="Play/Pause"
+            android:src="@mipmap/ic_player_pause_black" />
+
+        <ImageButton
+            android:id="@+id/playlist_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_player_playlist_black"
+            android:background="@null"
+            android:paddingEnd="20dp"
+            android:contentDescription="Playlist" />
+    </LinearLayout>
+</LinearLayout>
