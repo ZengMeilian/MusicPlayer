@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 一行一列布局 - 大图+文字 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="8dp"
-    android:background="?attr/selectableItemBackground"> <!-- 添加点击效果 -->
+    android:background="?attr/selectableItemBackground">
 
     <TextView
         android:id="@+id/singleModuleNameText"
@@ -17,7 +16,7 @@
 
     <!-- 封面图片 -->
     <ImageView
-        android:id="@+id/coverImage"
+        android:id="@+id/singleCoverImageView"
         android:layout_width="match_parent"
         android:layout_height="180dp"
         android:scaleType="centerCrop"

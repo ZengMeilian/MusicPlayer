@@ -23,7 +23,7 @@ public class LyricActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.player_lyrics); // 使用你的布局文件
+        setContentView(R.layout.player_lyrics);
 
         initViews();
         setupRecyclerView();

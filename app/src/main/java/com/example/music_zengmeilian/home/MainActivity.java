@@ -13,11 +13,8 @@ import com.example.music_zengmeilian.home.adapter.HomeAdapter;
 import com.example.music_zengmeilian.home.viewmodel.HomeViewModel;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
-
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
-    private View emptyView;
     private HomeAdapter adapter;
     private HomeViewModel viewModel;
 
@@ -34,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private void initViews() {
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         recyclerView = findViewById(R.id.recyclerView);
-        emptyView = findViewById(R.id.emptyView); // 确保布局中有这个id
 
         adapter = new HomeAdapter(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -42,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
 
         swipeRefreshLayout.setOnRefreshListener(() -> loadData(true));
-        findViewById(R.id.retryButton).setOnClickListener(v -> loadData(true));
     }
 
     private void setupViewModel() {
@@ -50,20 +45,9 @@ public class MainActivity extends AppCompatActivity {
 
         viewModel.getHomeData().observe(this, data -> {
             swipeRefreshLayout.setRefreshing(false);
-            if (data == null || data.isEmpty()) {
-                showEmptyView(true);
-                Toast.makeText(this, R.string.no_data_available, Toast.LENGTH_SHORT).show();
-            } else {
-                showEmptyView(false);
-                adapter.setData(data);
-            }
+            adapter.setData(data);
         });
 
-        viewModel.getErrorMessage().observe(this, error -> {
-            swipeRefreshLayout.setRefreshing(false);
-            showEmptyView(true);
-            Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
-        });
     }
 
     private void loadData(boolean isRefresh) {
@@ -71,16 +55,8 @@ public class MainActivity extends AppCompatActivity {
         viewModel.loadHomeData(isRefresh);
     }
 
-    private void showEmptyView(boolean show) {
-        emptyView.setVisibility(show ? View.VISIBLE : View.GONE);
-        recyclerView.setVisibility(show ? View.GONE : View.VISIBLE);
-    }
-
     @Override
     protected void onDestroy() {
-        if (adapter != null) {
-            adapter.cleanup();
-        }
         super.onDestroy();
     }
 }

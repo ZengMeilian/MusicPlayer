@@ -31,11 +31,10 @@
             android:background="?attr/selectableItemBackground">
 
             <ImageView
-                android:id="@+id/coverImage1"
+                android:id="@+id/twoColumnCoverImage1"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
-                android:scaleType="centerCrop"
-                android:contentDescription="@string/cover_image_desc"/>
+                android:scaleType="centerCrop" />
 
             <include
                 android:id="@+id/twoColumnInfo1"
@@ -57,11 +56,10 @@
             android:background="?attr/selectableItemBackground">
 
             <ImageView
-                android:id="@+id/coverImage2"
+                android:id="@+id/twoColumnCoverImage2"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
-                android:scaleType="centerCrop"
-                android:contentDescription="@string/cover_image_desc"/>
+                android:scaleType="centerCrop" />
 
             <include
                 android:id="@+id/twoColumnInfo2"

@@ -9,17 +9,17 @@ import java.io.Serializable;
 public class MusicInfo implements Serializable {
     private long id;            // 音乐ID
     private String musicName;   // 音乐名称
-    private String singer;      // 作者/歌手
+    private String author;      // 作者/歌手
     private String coverUrl;    // 封面图URL
     private String musicUrl;    // 音乐文件URL
     private String lyricUrl;    // 歌词文件URL
 
     // 构造方法
-    public MusicInfo(long id, String musicName, String singer,
+    public MusicInfo(long id, String musicName, String author,
                      String coverUrl, String musicUrl, String lyricUrl) {
         this.id = id;
         this.musicName = musicName;
-        this.singer = singer;
+        this.author = author;
         this.coverUrl = coverUrl;
         this.musicUrl = musicUrl;
         this.lyricUrl = lyricUrl;
@@ -28,7 +28,7 @@ public class MusicInfo implements Serializable {
     // Getter方法
     public long getId() { return id; }
     public String getMusicName() { return musicName; }
-    public String getSinger() { return singer; }
+    public String getAuthor() { return author; }
     public String getCoverUrl() { return coverUrl; }
     public String getMusicUrl() { return musicUrl; }
     public String getLyricUrl() { return lyricUrl; }

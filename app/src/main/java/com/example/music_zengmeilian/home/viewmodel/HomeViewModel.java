@@ -75,7 +75,4 @@ public class HomeViewModel extends AndroidViewModel {
         return homeData;
     }
 
-    public MutableLiveData<String> getErrorMessage() {
-        return errorMessage;
-    }
 }

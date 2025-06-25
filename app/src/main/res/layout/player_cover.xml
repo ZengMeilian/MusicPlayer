@@ -24,7 +24,6 @@
         android:layout_centerHorizontal="true"
         android:layout_alignLeft="@id/player_control_cover"
         android:layout_marginTop="30dp"
-        android:textColor="@android:color/white"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -37,7 +36,6 @@
         android:layout_centerHorizontal="true"
         android:layout_alignLeft="@id/player_control_cover"
         android:layout_marginTop="8dp"
-        android:textColor="@android:color/white"
         android:textSize="14sp"
         android:alpha="0.8" />
 

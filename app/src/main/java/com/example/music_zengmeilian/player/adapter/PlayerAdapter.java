@@ -80,7 +80,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.PlayerView
 
         public void bind(MusicInfo musicInfo, int position) {
             text1.setText(musicInfo.getMusicName());
-            text2.setText(musicInfo.getSinger());
+            text2.setText(musicInfo.getAuthor());
 
             // 高亮当前播放的音乐
             if (position == currentPlayingIndex) {

@@ -13,20 +13,19 @@
         android:textSize="16sp"
         android:textStyle="bold"/>
 
-    <!-- 带叠加文本的图片区域 -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/homeHorizontalImageView"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:scaleType="centerCrop"/>
 
     <!-- 歌名、歌手以及播放按钮 -->
     <include
-        android:id="@+id/horizontalInfo"
+        android:id="@+id/homeHorizontalInfo"
         layout="@layout/home_info_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
