@@ -37,6 +37,7 @@ public class PlayerActivity extends AppCompatActivity {
     public MusicInfo currentMusic;
     public List<MusicInfo> musicList;
     public int currentIndex;
+    private List<LyricLine> lyricLines;
 
 
     @Override
@@ -77,6 +78,24 @@ public class PlayerActivity extends AppCompatActivity {
         if (btnClose != null) {
             btnClose.setOnClickListener(v -> finish());
         }
+    }
+
+    public static class LyricLine {
+        public long time; // 时间戳(毫秒)
+        public String text; // 歌词内容
+
+        public LyricLine(long time, String text) {
+            this.time = time;
+            this.text = text;
+        }
+    }
+
+    public void setLyricLines(List<LyricLine> lines) {
+        this.lyricLines = lines;
+    }
+
+    public List<LyricLine> getLyricLines() {
+        return lyricLines;
     }
 
     // 添加设置Fragment引用的方法
