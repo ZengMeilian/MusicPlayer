@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.method.ScrollingMovementMethod;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
@@ -56,8 +57,10 @@ public class LyricsFragment extends BasePlayerFragment {
         if (activity != null) {
             activity.setLyricsFragment(this);
         }
+        updatePlayButtonIcon(activity.isPlaying());
 
         tvLyric = view.findViewById(R.id.tv_lyrics);
+        tvLyric.setMovementMethod(new ScrollingMovementMethod());
         updateLyric(); // 初始化歌词显示
     }
 
@@ -107,7 +110,7 @@ public class LyricsFragment extends BasePlayerFragment {
                         connection.disconnect();
 
                         // 解析LRC歌词
-                        List<PlayerActivity.LyricLine> lyricLines = parseLrcLyrics(rawLyrics.toString());
+                        List<PlayerActivity.LyricLine> lyricLines = parseLyrics(rawLyrics.toString());
 
                         if (getActivity() != null) {
                             getActivity().runOnUiThread(() -> {
@@ -133,19 +136,21 @@ public class LyricsFragment extends BasePlayerFragment {
     }
 
     // 解析LRC歌词方法
-    private List<PlayerActivity.LyricLine> parseLrcLyrics(String rawLyrics) {
+    private List<PlayerActivity.LyricLine> parseLyrics(String rawLyrics) {
         List<PlayerActivity.LyricLine> lines = new ArrayList<>();
         String[] lyricArray = rawLyrics.split("\n");
+        Pattern pattern = Pattern.compile("\\[(\\d+):(\\d+)\\.(\\d+)\\]");
 
         for (String line : lyricArray) {
-            Matcher matcher = Pattern.compile("\\[(\\d+):(\\d+)\\.?(\\d+)?\\]").matcher(line);
+            Matcher matcher = pattern.matcher(line);
             if (matcher.find()) {
                 try {
                     int minutes = Integer.parseInt(matcher.group(1));
                     int seconds = Integer.parseInt(matcher.group(2));
-                    int millis = matcher.group(3) != null ? Integer.parseInt(matcher.group(3)) : 0;
+                    // 正确处理毫秒部分（LRC格式通常是百分之一秒）
+                    int millis = Integer.parseInt(matcher.group(3)) * 10;
 
-                    long time = minutes * 60 * 1000 + seconds * 1000 + millis * 10;
+                    long time = minutes * 60 * 1000 + seconds * 1000 + millis;
                     String text = line.substring(matcher.end()).trim();
 
                     if (!text.isEmpty()) {
@@ -165,17 +170,22 @@ public class LyricsFragment extends BasePlayerFragment {
     private void displayLyrics(String header, List<PlayerActivity.LyricLine> lines, int currentLine) {
         SpannableStringBuilder builder = new SpannableStringBuilder(header);
 
-        // 头部信息（歌曲名和歌手名）不会被高亮
-        int headerLineCount = 2; // 头部信息占用的行数（歌曲名和歌手名 + 空行）
-
         for (int i = 0; i < lines.size(); i++) {
             PlayerActivity.LyricLine line = lines.get(i);
             builder.append(line.text).append("\n");
 
-            // 高亮当前播放的歌词行（跳过头部信息）
+            // 高亮当前播放的歌词行
             if (i == currentLine) {
                 int start = builder.length() - line.text.length() - 1;
                 int end = builder.length() - 1;
+
+                // 清除之前的样式
+                ForegroundColorSpan[] oldColorSpans = builder.getSpans(0, builder.length(), ForegroundColorSpan.class);
+                for (ForegroundColorSpan span : oldColorSpans) {
+                    builder.removeSpan(span);
+                }
+
+                // 应用新样式
                 builder.setSpan(
                         new ForegroundColorSpan(Color.RED),
                         start, end,
@@ -195,17 +205,10 @@ public class LyricsFragment extends BasePlayerFragment {
     // 更新歌词位置方法
     public void updateLyricPosition(long currentPosition) {
         PlayerActivity activity = (PlayerActivity) getActivity();
-        if (activity == null || activity.getLyricLines() == null) return;
+        if (activity == null || activity.getLyricLines() == null || tvLyric == null) return;
 
         List<PlayerActivity.LyricLine> lines = activity.getLyricLines();
-        int currentLine = -1;
-
-        for (int i = 0; i < lines.size(); i++) {
-            if (lines.get(i).time > currentPosition) {
-                break;
-            }
-            currentLine = i;
-        }
+        int currentLine = findCurrentLyricLine(lines, currentPosition);
 
         if (currentLine >= 0) {
             StringBuilder header = new StringBuilder();
@@ -216,13 +219,30 @@ public class LyricsFragment extends BasePlayerFragment {
             header.append("\n\n");
 
             displayLyrics(header.toString(), lines, currentLine);
+            scrollToLyric(currentLine);
+        }
+    }
 
-            // 自动滚动
-            Layout layout = tvLyric.getLayout();
-            if (layout != null) {
-                int scrollY = layout.getLineTop(currentLine + 2); // +2是因为header有两行
-                tvLyric.scrollTo(0, scrollY);
+    // 新增方法：更精确地查找当前歌词行
+    private int findCurrentLyricLine(List<PlayerActivity.LyricLine> lines, long currentPosition) {
+        for (int i = 0; i < lines.size(); i++) {
+            // 如果是最后一行，或者下一行的时间已经超过了当前播放位置
+            if (i == lines.size() - 1 || lines.get(i + 1).time > currentPosition) {
+                return i;
             }
+        }
+        return -1;
+    }
+
+    // 新增方法：平滑滚动到指定歌词行
+    private void scrollToLyric(int lineNumber) {
+        if (tvLyric == null || lineNumber < 0) return;
+
+        Layout layout = tvLyric.getLayout();
+        if (layout != null) {
+            int lineHeight = tvLyric.getLineHeight();
+            int targetScrollY = lineNumber * lineHeight - (tvLyric.getHeight() / 3);
+            tvLyric.scrollTo(0, targetScrollY);
         }
     }
 }

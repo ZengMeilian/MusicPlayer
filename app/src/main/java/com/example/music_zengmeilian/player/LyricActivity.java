@@ -32,8 +32,6 @@ public class LyricActivity extends AppCompatActivity {
 
     private void initViews() {
         recyclerView = findViewById(R.id.recyclerView);
-//        tvMusicName = findViewById(R.id.tvMusicName);
-//        tvSinger = findViewById(R.id.tvSinger);
     }
 
     private void setupRecyclerView() {

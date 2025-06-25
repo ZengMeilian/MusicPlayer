@@ -18,7 +18,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
  * 播放器封面页 Fragment，显示专辑封面和旋转动画
  */
 public class PlayerCoverFragment extends BasePlayerFragment {
-    private static final String TAG = "PlayerCoverFragment";
     private CircleImageView ivCover;
     private TextView tvMusicName, tvSinger;
     private ObjectAnimator rotateAnimator; // 封面旋转动画

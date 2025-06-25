@@ -191,7 +191,7 @@ public class PlayerActivity extends AppCompatActivity {
         progressRunnable = new Runnable() {
             @Override
             public void run() {
-                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                if (mediaPlayer != null && isPlaying) {  // 使用isPlaying而不是mediaPlayer.isPlaying()
                     try {
                         int currentPosition = mediaPlayer.getCurrentPosition();
                         int duration = mediaPlayer.getDuration();
@@ -199,8 +199,13 @@ public class PlayerActivity extends AppCompatActivity {
                         // 通知Fragment更新进度
                         notifyProgressUpdate(currentPosition, duration);
 
-                        // 每秒更新一次
-                        progressHandler.postDelayed(this, 1000);
+                        // 特别通知歌词Fragment更新位置
+                        if (lyricsFragment != null) {
+                            lyricsFragment.updateLyricPosition(currentPosition);
+                        }
+
+                        // 更频繁地更新(每200ms)
+                        progressHandler.postDelayed(this, 200);
                     } catch (Exception e) {
                         Log.e(TAG, "更新进度失败: " + e.getMessage());
                     }
