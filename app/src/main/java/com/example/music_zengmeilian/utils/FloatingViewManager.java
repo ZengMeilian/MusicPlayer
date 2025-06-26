@@ -1,5 +1,6 @@
 package com.example.music_zengmeilian.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -16,7 +17,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.music_zengmeilian.R;
 import com.example.music_zengmeilian.model.MusicInfo;
+import com.example.music_zengmeilian.player.LyricsFragment;
 import com.example.music_zengmeilian.player.PlayerActivity;
+import com.example.music_zengmeilian.player.PlayerCoverFragment;
 import com.example.music_zengmeilian.player.adapter.MusicListAdapter;
 
 import java.util.ArrayList;
@@ -72,40 +75,32 @@ public class FloatingViewManager {
     public void updateCurrentMusic(MusicInfo musicInfo, boolean isPlaying) {
         this.currentMusic = musicInfo;
         this.isPlaying = isPlaying;
+        updateUI();
+    }
 
-        if (floatingView == null) return;
+    private void updateUI() {
+        if (floatingView == null || currentMusic == null) return;
 
-        // 获取悬浮窗中的UI组件
-        TextView songName = floatingView.findViewById(R.id.song_name);
-        TextView artistName = floatingView.findViewById(R.id.artist_name);
-        ImageView songImage = floatingView.findViewById(R.id.song_image);
-        ImageButton playButton = floatingView.findViewById(R.id.floating_view_play_button);
-        ImageButton playListButton = floatingView.findViewById(R.id.floating_view_playlist_button);
+        runOnUiThread(() -> {
+            TextView songName = floatingView.findViewById(R.id.song_name);
+            TextView artistName = floatingView.findViewById(R.id.artist_name);
+            ImageView songImage = floatingView.findViewById(R.id.song_image);
+            ImageButton playButton = floatingView.findViewById(R.id.floating_view_play_button);
 
-        // 更新音乐信息显示
-        songName.setText(musicInfo.getMusicName());
-        artistName.setText(musicInfo.getAuthor());
-        loadImage(musicInfo.getCoverUrl(), songImage);
+            songName.setText(currentMusic.getMusicName());
+            artistName.setText(currentMusic.getAuthor());
+            loadImage(currentMusic.getCoverUrl(), songImage);
 
-        // 更新播放按钮图标
-        updatePlayButtonIcon(playButton);
-
-        // 设置播放/暂停按钮点击事件
-        playButton.setOnClickListener(v -> {
-            // 触发播放/暂停回调
-            if (playPauseListener != null) {
-                playPauseListener.onPlayPause();
-            }
-            // 更新本地播放状态
-            this.isPlaying = !this.isPlaying;
-            // 更新按钮图标
-            updatePlayButtonIcon(playButton);
+            // 更新播放按钮状态
+            playButton.setImageResource(isPlaying ?
+                    R.mipmap.ic_player_pause : R.mipmap.ic_player_playing);
         });
+    }
 
-        // 设置播放列表按钮点击事件
-        playListButton.setOnClickListener(v -> {
-            showPlaylistDialog();
-        });
+    private void runOnUiThread(Runnable action) {
+        if (context instanceof Activity) {
+            ((Activity) context).runOnUiThread(action);
+        }
     }
 
     // 更新播放按钮图标
@@ -198,5 +193,34 @@ public class FloatingViewManager {
         Glide.with(context)
                 .load(url)
                 .into(imageView);
+    }
+
+    // 隐藏悬浮窗
+    public void hideFloatingView() {
+        if (floatingView != null) {
+            floatingView.setVisibility(View.GONE);
+        }
+    }
+
+    // 显示悬浮窗
+    public void showFloatingView() {
+        if (floatingView != null) {
+            floatingView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    // 在 FloatingViewManager 类中添加以下方法
+    public void syncWithPlayerCover(PlayerCoverFragment fragment) {
+        if (fragment != null && currentMusic != null) {
+            // 同步音乐信息
+            updateCurrentMusic(currentMusic, isPlaying);
+        }
+    }
+
+    public void syncWithLyrics(LyricsFragment fragment) {
+        if (fragment != null && currentMusic != null) {
+            // 同步音乐信息
+            updateCurrentMusic(currentMusic, isPlaying);
+        }
     }
 }

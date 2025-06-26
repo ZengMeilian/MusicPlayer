@@ -49,7 +49,10 @@ public class PlayerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player_container);
-
+        // 隐藏悬浮窗
+        if (floatingViewManager != null) {
+            floatingViewManager.hideFloatingView();
+        }
         setFloatingView();
         receiveData();
         initViews();
@@ -123,6 +126,23 @@ public class PlayerActivity extends AppCompatActivity {
             }
         }
         return 0;
+    }
+
+    private void updateAllUI() {
+        // 更新悬浮窗
+        updateFloatingView();
+
+        // 更新封面Fragment
+        if (playerCoverFragment != null) {
+            playerCoverFragment.onSongChanged();
+            playerCoverFragment.onPlayStateChanged(isPlaying());
+        }
+
+        // 更新歌词Fragment
+        if (lyricsFragment != null) {
+            lyricsFragment.onSongChanged();
+            lyricsFragment.onPlayStateChanged(isPlaying());
+        }
     }
 
     // 更新悬浮窗显示
@@ -206,8 +226,12 @@ public class PlayerActivity extends AppCompatActivity {
             mediaPlayer.reset();
             mediaPlayer.setDataSource(musicInfo.getMusicUrl());
             mediaPlayer.prepareAsync();
-            Log.d(TAG, "开始准备播放: " + musicInfo.getMusicName());
-            Log.d(TAG, "音频URL: " + musicInfo.getMusicUrl());
+            currentMusic = musicInfo;
+            currentIndex = findCurrentIndex(musicInfo);
+
+            // 更新所有UI
+            updateAllUI();
+
         } catch (Exception e) {
             Log.e("PlayerActivity", "播放音乐失败: " + e.getMessage());
         }
@@ -220,18 +244,13 @@ public class PlayerActivity extends AppCompatActivity {
         try {
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.pause();
-                isPlaying = false;
-                stopProgressUpdate();
-                Log.d(TAG, "音乐暂停");
             } else {
                 mediaPlayer.start();
-                isPlaying = true;
-                startProgressUpdate();
-                Log.d(TAG, "音乐继续播放");
             }
+            isPlaying = !isPlaying;
 
-            // 通知Fragment更新UI
-            notifyPlayStateChanged();
+            // 更新所有UI
+            updateAllUI();
 
         } catch (Exception e) {
             Log.e(TAG, "播放控制失败: " + e.getMessage());
@@ -356,6 +375,10 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        // 重新显示悬浮窗
+        if (floatingViewManager != null) {
+            floatingViewManager.showFloatingView();
+        }
         stopProgressUpdate();
         if (mediaPlayer != null) {
             mediaPlayer.release();

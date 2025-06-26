@@ -138,5 +138,13 @@ public class PlayerCoverFragment extends BasePlayerFragment {
 
     public void onSongChanged() {
         updateUI();
+        // 重置旋转动画
+        if (rotateAnimator != null) {
+            rotateAnimator.cancel();
+            initRotateAnimation();
+            if (((PlayerActivity) getActivity()).isPlaying()) {
+                startRotation();
+            }
+        }
     }
 }

@@ -85,7 +85,7 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             MusicInfo selectedMusic = musicList.get(randomMusicIndex);
 
             // 更新悬浮窗中当前音乐的信息
-            floatingViewManager.updateCurrentMusic(selectedMusic);
+            floatingViewManager.updateCurrentMusic(selectedMusic,false);
         }
     }
 
@@ -211,10 +211,10 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             public void onClick(View view) {
                 Toast.makeText(context, "添加到播放列表", Toast.LENGTH_SHORT).show();
 
-                /// 更新悬浮窗中的当前音乐信息
-                if (floatingViewManager != null) {
-                    floatingViewManager.updateCurrentMusic(musicInfo);
-                }
+//                /// 更新悬浮窗中的当前音乐信息
+//                if (floatingViewManager != null) {
+//                    floatingViewManager.updateCurrentMusic(musicInfo);
+//                }
             }
         });
     }
