@@ -223,7 +223,7 @@ public class LyricsFragment extends BasePlayerFragment {
         }
     }
 
-    // 新增方法：更精确地查找当前歌词行
+    // 更精确地查找当前歌词行
     private int findCurrentLyricLine(List<PlayerActivity.LyricLine> lines, long currentPosition) {
         for (int i = 0; i < lines.size(); i++) {
             // 如果是最后一行，或者下一行的时间已经超过了当前播放位置
@@ -234,7 +234,7 @@ public class LyricsFragment extends BasePlayerFragment {
         return -1;
     }
 
-    // 新增方法：平滑滚动到指定歌词行
+    // 平滑滚动到指定歌词行
     private void scrollToLyric(int lineNumber) {
         if (tvLyric == null || lineNumber < 0) return;
 

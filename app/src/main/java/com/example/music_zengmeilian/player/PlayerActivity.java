@@ -6,12 +6,14 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 import com.example.music_zengmeilian.R;
 import com.example.music_zengmeilian.model.MusicInfo;
 import com.example.music_zengmeilian.player.adapter.PlayerPagerAdapter;
+import com.example.music_zengmeilian.utils.FloatingViewManager;
 
 import java.util.List;
 
@@ -39,16 +41,49 @@ public class PlayerActivity extends AppCompatActivity {
     public int currentIndex;
     private List<LyricLine> lyricLines;
 
+    //首页悬浮
+    private FloatingViewManager floatingViewManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player_container);
 
+        setFloatingView();
         receiveData();
         initViews();
         initEvents();
         initMediaPlayer();
+    }
+
+    public void setFloatingView(){
+        // 初始化悬浮窗管理器
+        ViewGroup rootView = findViewById(android.R.id.content);
+        floatingViewManager = new FloatingViewManager(this, rootView, musicList);
+
+        // 设置播放/暂停回调
+        floatingViewManager.setPlayPauseListener(() -> {
+            playPause(); // 调用Activity的播放/暂停方法
+        });
+
+        // 设置播放指定音乐回调
+        floatingViewManager.setPlayMusicListener(musicInfo -> {
+            currentMusic = musicInfo;
+            currentIndex = findCurrentIndex(musicInfo);
+            playMusic(currentMusic); // 播放选中的音乐
+
+            // 更新Fragment UI
+            if (playerCoverFragment != null) {
+                playerCoverFragment.onSongChanged();
+            }
+            if (lyricsFragment != null) {
+                lyricsFragment.onSongChanged();
+            }
+        });
+
+        // 更新悬浮窗显示
+        updateFloatingView();
     }
 
     private void receiveData() {
@@ -77,6 +112,23 @@ public class PlayerActivity extends AppCompatActivity {
     private void initEvents() {
         if (btnClose != null) {
             btnClose.setOnClickListener(v -> finish());
+        }
+    }
+
+    // 查找音乐在列表中的位置
+    private int findCurrentIndex(MusicInfo musicInfo) {
+        for (int i = 0; i < musicList.size(); i++) {
+            if (musicList.get(i).getId() == musicInfo.getId()) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    // 更新悬浮窗显示
+    private void updateFloatingView() {
+        if (floatingViewManager != null && currentMusic != null) {
+            floatingViewManager.updateCurrentMusic(currentMusic, isPlaying());
         }
     }
 
@@ -191,7 +243,7 @@ public class PlayerActivity extends AppCompatActivity {
         progressRunnable = new Runnable() {
             @Override
             public void run() {
-                if (mediaPlayer != null && isPlaying) {  // 使用isPlaying而不是mediaPlayer.isPlaying()
+                if (mediaPlayer != null && isPlaying) {
                     try {
                         int currentPosition = mediaPlayer.getCurrentPosition();
                         int duration = mediaPlayer.getDuration();
